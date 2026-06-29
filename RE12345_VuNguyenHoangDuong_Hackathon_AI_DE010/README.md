@@ -200,88 +200,66 @@ WHERE c.code IN ('VIETGAP', 'OCOP_3SAO');
 #### Prompt gửi AI
 > **Prompt:** Dựa trên các Entity đã chốt, hãy tạo mã Mermaid để vẽ sơ đồ ERD hoàn chỉnh cho hệ thống AgriSmart Market. Bao gồm tất cả các thực thể: User, Farm, ProductBatch, Certification, BatchCertification, Order, LogisticsRequest. Thể hiện rõ khóa chính, khóa ngoại và mối quan hệ giữa các bảng.
 
-#### Kết quả - Mã Mermaid ERD
+#### Kết quả - Sơ đồ ERD (dạng text)
 
-File đầy đủ tại: `docs/erd_diagram.md`
+Sơ đồ quan hệ thực thể được biểu diễn dưới dạng text với các mối quan hệ 1-N và N-N:
 
-```mermaid
-erDiagram
-    User {
-        Long id PK
-        String username
-        String password
-        String email
-        String phone
-        String fullName
-        String role "FARMER | BUYER | ADMIN"
-    }
-
-    Farm {
-        Long id PK
-        String name
-        String address
-        Double area
-        Long ownerId FK
-    }
-
-    ProductBatch {
-        Long id PK
-        String batchCode
-        String productName
-        String category
-        Double estimatedYield
-        String unit
-        Date harvestDate
-        String status
-        Long farmId FK
-    }
-
-    Certification {
-        Long id PK
-        String code
-        String name
-        String description
-    }
-
-    BatchCertification {
-        Long id PK
-        Long batchId FK
-        Long certificationId FK
-        Date issueDate
-        Date expiryDate
-    }
-
-    Order {
-        Long id PK
-        String orderCode
-        Date orderDate
-        Double quantity
-        Double totalPrice
-        String status
-        Long batchId FK
-        Long buyerId FK
-    }
-
-    LogisticsRequest {
-        Long id PK
-        Long orderId FK
-        String pickupAddress
-        String deliveryAddress
-        Date pickupDate
-        Double requiredCapacity
-        String status
-    }
-
-    User ||--o{ Farm : owns
-    Farm ||--o{ ProductBatch : produces
-    ProductBatch ||--o{ BatchCertification : has
-    Certification ||--o{ BatchCertification : classified_by
-    ProductBatch ||--o{ Order : references
-    User ||--o{ Order : places
-    Order ||--o{ LogisticsRequest : triggers
 ```
-
-**Cách render:** Copy đoạn mã trên vào https://mermaid.live/ hoặc dùng plugin Mermaid trong VS Code/Markdown editor để xuất ra `docs/erd_diagram.png`.
++------------------+      1-N      +------------------+
+|      User        |--------------->|      Farm        |
++------------------+                +------------------+
+| id (PK)          |                | id (PK)          |
+| username         |                | name             |
+| password         |                | address          |
+| email            |                | area             |
+| phone            |                | ownerId (FK)     |
+| fullName         |                +------------------+
+| role             |                        |
++------------------+                        | 1-N
+         |                                  v
+         | 1-N    +------------------+------------------+
+         |------->|      Order       |    ProductBatch  |
+         |        +------------------+------------------+
+         |        | id (PK)          | id (PK)          |
+         |        | orderCode        | batchCode        |
+         |        | orderDate        | productName      |
+         |        | quantity         | category         |
+         |        | totalPrice       | estimatedYield   |
+         |        | status           | unit             |
+         |        | batchId (FK) --->| harvestDate      |
+         |        | buyerId (FK)     | status           |
+         |        +------------------+ farmId (FK)      |
+         |                |          +------------------+
+         |                | 1-N              |
+         |                v                  | N-N
+         |    +-------------------+          |
+         |    | LogisticsRequest  |          |
+         |    +-------------------+          |
+         |    | id (PK)           |          |
+         |    | orderId (FK)      |          |
+         |    | pickupAddress     |          |
+         |    | deliveryAddress   |          v
+         |    | pickupDate        |    +-----------------------+
+         |    | requiredCapacity  |    | BatchCertification    |
+         |    | status            |    +-----------------------+
+         |    +-------------------+    | id (PK)               |
+         |                             | batchId (FK)          |
+         |                             | certificationId (FK)  |
+         |                             | issueDate             |
+         |                             | expiryDate            |
+         |                             +-----------------------+
+         |                                      |
+         |                              N-N     |
+         |                                      v
+         |                            +------------------+
+         |                            |  Certification   |
+         |                            +------------------+
+         |                            | id (PK)          |
+         |                            | code             |
+         |                            | name             |
+         |                            | description      |
+         |                            +------------------+
+```
 
 ---
 
