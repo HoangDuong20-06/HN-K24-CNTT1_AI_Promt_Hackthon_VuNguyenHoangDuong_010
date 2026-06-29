@@ -266,7 +266,7 @@ Sơ đồ quan hệ thực thể được biểu diễn dưới dạng text vớ
 ## CẤU TRÚC THƯ MỤC
 
 ```
-RE12345_VuNguyenHoangDuong_Hackathon_AI_DE010/
+B24DTCN097_VuNguyenHoangDuong_Hackathon_AI_DE010/
 ├── src/
 │   ├── farm/
 │   │   ├── entity/
